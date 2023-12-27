@@ -20,7 +20,7 @@ class Register extends React.Component {
     }
     onSubmitSignInForm = () => {
         const { onRouteChange, loadUser } = this.props;
-        fetch('http://localhost:3000/register', {
+        fetch('https://smartai-zaraki-ki.onrender.com/register', {
             method: 'post',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
