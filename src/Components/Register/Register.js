@@ -7,8 +7,11 @@ class Register extends React.Component {
             email: '',
             password: '',
             name: '',
+            loadingSign: false,
+            showErrorMessage: false
         }
     }
+
     onNewNameChange = (event) => {
         this.setState({ name: event.target.value })
     }
@@ -19,6 +22,9 @@ class Register extends React.Component {
         this.setState({ email: event.target.value })
     }
     onSubmitSignInForm = () => {
+        this.setState({
+            loadingSign: true,
+        })
         const { onRouteChange, loadUser } = this.props;
         fetch('https://smartai-zaraki-ki.onrender.com/register', {
             method: 'post',
@@ -31,10 +37,16 @@ class Register extends React.Component {
         })
             .then(res => res.json())
             .then(user => {
-                if(user.id) {
+                if (user === "Please fill in the required credentials") {
+                    this.setState({ showErrorMessage: true })
+                }
+                if (user.id) {
                     loadUser(user);
                     onRouteChange('home');
                 }
+            })
+            .finally(() => {
+                this.setState({ loadingSign: false })
             })
     }
 
@@ -87,12 +99,15 @@ class Register extends React.Component {
                                     type="password"
                                     name="password"
                                     className="input-reset db w-100 mw-100 white b pv2 ph3 bg-white-30 hover-bg-white-70 hover-gray outline-0 bn br-pill" />
+                                <span style={{ color: "#cc0000", fontFamily: "monospace" }}>
+                                    {this.state.showErrorMessage && "Please Fill in all the fields properly"}
+                                </span>
                             </div>
                             <div>
                                 <button
                                     onClick={this.onSubmitSignInForm}
                                     type='submit'
-                                    className="input-reset db w-100 light-gray f6 b ttu tracked pv3 ph3 pointer bg-dark-blue hover-bg-blue bn br-pill">Create New Account!
+                                    className="input-reset db w-100 light-gray f6 b ttu tracked pv3 ph3 pointer bg-dark-blue hover-bg-blue bn br-pill">{!this.state.loadingSign ? "Create New Account" : "loading..."}
                                 </button>
                             </div>
                         </div>

@@ -1,12 +1,21 @@
 import React from 'react';
+import './Signin.css'
+
 
 class Signin extends React.Component {
+
     constructor(props) {
         super(props);
         this.state = {
             signInEmail: '',
-            signInPassword: ''
+            signInPassword: '',
+            loadingSign: false, //this is a new state to manage the loading sign
+            showErrorMessage: false, //this is a new state to manage error visibility
         }
+    }
+
+    errorMessage = () => {
+      this.setState({ showErrorMessage: true });
     }
     onEmailChange = (event) => {
         this.setState({ signInEmail: event.target.value })
@@ -20,6 +29,9 @@ class Signin extends React.Component {
         }
     }
     onSubmitSignInForm = () => {
+        this.setState({
+            loadingSign: true
+        })
         fetch('https://smartai-zaraki-ki.onrender.com/signin', {
             method: 'post',
             headers: { 'Content-Type': 'application/json' },
@@ -29,12 +41,22 @@ class Signin extends React.Component {
             })
         })
             .then(res => res.json())
+            // This is for the invalid credentials message
             .then(user => {
+                if (user === "Please fill in the required credentials at Signin") {
+                    this.errorMessage();
+                }
                 if (user.id) {
                     this.props.loadUser(user);
                     this.props.onRouteChange('home');
                 }
             })
+            .finally(() => {
+              this.setState({
+                loadingSign: false,
+              })
+            })
+
     }
 
 
@@ -49,28 +71,41 @@ class Signin extends React.Component {
                     <div className="relative pa4 pa5-m">
                         <h1 className="serif tracked ma0 mb4 pv3">Sign In</h1>
                         <div id="login" className="">
-                            <div className="mb3">
-                                <label htmlFor="username" className="db f6 white-80 ttu ph2 mb2">Username</label>
-                                <input
-                                    type="email"
-                                    placeholder='example123@gmail.com'
-                                    name="username"
-                                    onKeyDown={this.onClickEnter}
-                                    onChange={this.onEmailChange}
-                                    className="input-reset db w-100 mw-100 white b pv2 ph3 bg-white-30 hover-bg-white-70 hover-gray outline-0 bn br-pill" />
+                        <div className="mb3">
+                                <div className="inputcontainer">
+                                    <label htmlFor="username" className="db f6 white-80 ttu ph2 mb2">Username</label>
+                                    <input
+                                        placeholder="example123@gmail.com"
+                                        type="email"
+                                        onChange={this.onEmailChange}
+                                        name="username"
+                                        onKeyDown={this.onClickEnter}
+                                        className="input-reset db w-100 mw-100 white b pv2 ph3 bg-white-30 hover-bg-white-70 hover-gray outline-0 bn br-pill" />
+                                    <div className="icon-container">
+                                        <i className={this.state.loadingSign ? "loadGod" : "select"}></i>
+                                    </div>
+                                </div>
                             </div>
                             <div className="mb4">
-                                <label htmlFor="password" className="db f6 white-80 ttu ph2 mb2">Password</label>
-                                <input
-                                    type="password"
-                                    onChange={this.onPasswordChange}
-                                    name="password"
-                                    onKeyDown={this.onClickEnter}
-                                    className="input-reset db w-100 mw-100 white b pv2 ph3 bg-white-30 hover-bg-white-70 hover-gray outline-0 bn br-pill" />
+                                {/* loader class */}
+                                <div className="inputcontainer">
+                                    <label htmlFor="password" className="db f6 white-80 ttu ph2 mb2">Password</label>
+                                    <input
+                                        type="password"
+                                        onChange={this.onPasswordChange}
+                                        name="password"
+                                        onKeyDown={this.onClickEnter}
+                                        className="input-reset db w-100 mw-100 white b pv2 ph3 bg-white-30 hover-bg-white-70 hover-gray outline-0 bn br-pill" />
+                                    <div className="icon-container">
+                                        <i className={this.state.loadingSign ? "loadGod" : "select"}></i>
+                                    </div>
+                                </div>
+                                <span style={{ color: "#cc0000", paddingTop: "10px", fontFamily: "monospace" }}>
+                                    {this.state.showErrorMessage && "Wrong Email or Password"}
+                                </span>
                             </div>
                             <div>
                                 <button
-                                    // onClick={() => onRouteChange('home')} ---> I still have to make research on why we used arrow functions instead of just calling this.onRouteChange
                                     onClick={this.onSubmitSignInForm}
                                     className="input-reset db w-100 light-gray f6 b ttu tracked pv3 ph3 pointer bg-dark-blue hover-bg-blue bn br-pill">Sign In</button>
                             </div>
