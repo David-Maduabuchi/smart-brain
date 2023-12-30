@@ -46,6 +46,9 @@ class Signin extends React.Component {
                 if (user === "Please fill in the required credentials at Signin") {
                     this.errorMessage();
                 }
+                if (user === "wrong credentials ma boy") {
+                    this.errorMessage();
+                }
                 if (user.id) {
                     this.props.loadUser(user);
                     this.props.onRouteChange('home');

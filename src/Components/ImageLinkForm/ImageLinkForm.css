@@ -48,5 +48,11 @@
 }
 .shallipopi {
   text-align: left;
-  margin-left: 40px;
+  margin-left: 5px;
+  max-width: 100%;
+  word-break: break-all;
 }
+.sigma {
+  max-width: 100px;
+}
+
